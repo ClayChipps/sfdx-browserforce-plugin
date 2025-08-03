@@ -8,6 +8,19 @@ describe(OmniChannelSettings.name, function () {
     plugin = new OmniChannelSettings(global.bf);
   });
 
+  const configEnableEnhancedOmniChannelRouting = {
+    enhancedOmniChannelRouting: {
+      agreeToTermsAndConditions: true,
+      enableEnhancedOmniChannelRouting: true,
+    },
+  };
+  const configDisableEnhancedOmniChannelRouting = {
+    enhancedOmniChannelRouting: {
+      agreeToTermsAndConditions: false,
+      enableEnhancedOmniChannelRouting: false,
+    },
+  };
+
   const configEnableStatusBasedCapacityModel = {
     enableStatusBasedCapacityModel: true,
   };
@@ -25,5 +38,17 @@ describe(OmniChannelSettings.name, function () {
     await plugin.run(configDisableStatusBasedCapacityModel);
     const res = await plugin.retrieve();
     assert.deepStrictEqual(res, configDisableStatusBasedCapacityModel);
+  });
+
+  it('should enable enhanced omni channel routing', async () => {
+    await plugin.run(configEnableEnhancedOmniChannelRouting);
+    const res = await plugin.retrieve();
+    assert.deepStrictEqual(res, configEnableEnhancedOmniChannelRouting);
+  });
+
+  it('should disable enhanced omni channel routing', async () => {
+    await plugin.run(configDisableEnhancedOmniChannelRouting);
+    const res = await plugin.retrieve();
+    assert.deepStrictEqual(res, configDisableEnhancedOmniChannelRouting);
   });
 });
