@@ -4,7 +4,7 @@ const BASE_PATH = 'omnichannel/settings.apexp';
 
 const AGREE_TO_TERMS_SELECTOR = 'input[id$=":scrt2Form:toggleAcceptAgreement"]';
 const ACCEPT_BUTTON_SELECTOR = 'input[id$=":scrt2Form:acceptButton"]';
-const CONTINUE_BUTTON_SELECTOR = 'input[id*="scrt2Form"][value="continue"]';
+const CONTINUE_BUTTON_SELECTOR = 'input[id*="scrt2Form"][value="Continue"]';
 const ENHANCED_OMNI_CHANNEL_ROUTING_SELECTOR =
   'input[id="toggleScrt2RoutingConnect"]';
 const SAVE_BUTTON_SELECTOR = 'input[id$=":save"]';
@@ -12,57 +12,60 @@ const STATUS_CAPACITY_TOGGLE_SELECTOR =
   'input[id$=":toggleOmniStatusCapModelPref"]';
 
 type Config = {
-  enhancedOmniChannelRouting?: {
-    agreeToTermsAndConditions?: boolean;
-    enableEnhancedOmniChannelRouting?: boolean;
-  };
+  enableEnhancedOmniChannelRouting?: boolean;
   enableStatusBasedCapacityModel?: boolean;
 };
 
 export class OmniChannelSettings extends BrowserforcePlugin {
   public async retrieve(definition?: Config): Promise<Config> {
+    const response: Config = {};
+
+    if (!definition) {
+      return response;
+    }
+
     // Open the omni-channel setup page
     const page = await this.browserforce.openPage(BASE_PATH);
 
-    // Retrieve the enhanced omnichannel routing setting
-    await page.waitForSelector(ENHANCED_OMNI_CHANNEL_ROUTING_SELECTOR);
-    const enableEnhancedOmniChannelRouting = await page.$eval(
-      ENHANCED_OMNI_CHANNEL_ROUTING_SELECTOR,
-      (el) => (el.getAttribute('checked') === 'checked' ? true : false)
-    );
+    if ('enableEnhancedOmniChannelRouting' in definition) {
+      // Retrieve the enhanced omnichannel routing setting
+      await page.waitForSelector(ENHANCED_OMNI_CHANNEL_ROUTING_SELECTOR);
+      const enableEnhancedOmniChannelRouting = await page.$eval(
+        ENHANCED_OMNI_CHANNEL_ROUTING_SELECTOR,
+        (el) => (el.getAttribute('checked') === 'checked' ? true : false)
+      );
 
-    // Retrieve the service channel config
-    await page.waitForSelector(STATUS_CAPACITY_TOGGLE_SELECTOR);
-    const enableStatusBasedCapacityModel = await page.$eval(
-      STATUS_CAPACITY_TOGGLE_SELECTOR,
-      (el) => (el.getAttribute('checked') === 'checked' ? true : false)
-    );
+      response.enableEnhancedOmniChannelRouting =
+        enableEnhancedOmniChannelRouting;
+    }
 
-    return {
-      enhancedOmniChannelRouting: {
-        // If the user has not enabled the feature, then we know they have not agreed to the terms and conditions, and vice versa
-        agreeToTermsAndConditions: enableEnhancedOmniChannelRouting,
-        enableEnhancedOmniChannelRouting,
-      },
-      enableStatusBasedCapacityModel,
-    };
+    if ('enableStatusBasedCapacityModel' in definition) {
+      // Retrieve the service channel config
+      await page.waitForSelector(STATUS_CAPACITY_TOGGLE_SELECTOR);
+      const enableStatusBasedCapacityModel = await page.$eval(
+        STATUS_CAPACITY_TOGGLE_SELECTOR,
+        (el) => (el.getAttribute('checked') === 'checked' ? true : false)
+      );
+
+      response.enableStatusBasedCapacityModel = enableStatusBasedCapacityModel;
+    }
+
+    return response;
   }
 
   public async apply(config: Config): Promise<void> {
     // Open the omni-channel setup page
     const page = await this.browserforce.openPage(BASE_PATH);
 
-    if (
-      Object.hasOwn(
-        config.enhancedOmniChannelRouting,
-        'enableEnhancedOmniChannelRouting'
-      )
-    ) {
+    if ('enableEnhancedOmniChannelRouting' in config) {
       // Click the checkbox
-      const enhancedOmniChannelRoutingToggle = await page.waitForSelector(
-        ENHANCED_OMNI_CHANNEL_ROUTING_SELECTOR
+      await page.$eval(
+        ENHANCED_OMNI_CHANNEL_ROUTING_SELECTOR,
+        (e: HTMLInputElement, v: boolean) => {
+          e.checked = v;
+        },
+        config.enableEnhancedOmniChannelRouting
       );
-      await enhancedOmniChannelRoutingToggle.click();
 
       // Click the continue button
       const continueButton = await page.waitForSelector(
@@ -86,14 +89,8 @@ export class OmniChannelSettings extends BrowserforcePlugin {
           }
         );
 
-        if (!config.enhancedOmniChannelRouting.agreeToTermsAndConditions) {
-          throw new Error(
-            'You must agree to the terms and conditions to enable enhanced omni-channel routing.'
-          );
-        }
-
-        agreeToTerms.click();
-        acceptButton.click();
+        await agreeToTerms.click();
+        await acceptButton.click();
       } catch (error) {
         // If the terms and conditions are not present, we can skip this step
       }
@@ -102,7 +99,7 @@ export class OmniChannelSettings extends BrowserforcePlugin {
       await page.waitForNavigation();
     }
 
-    if (Object.hasOwn(config, 'enableStatusBasedCapacityModel')) {
+    if ('enableStatusBasedCapacityModel' in config) {
       // Click the checkbox
       const capacityModel = await page.waitForSelector(
         STATUS_CAPACITY_TOGGLE_SELECTOR

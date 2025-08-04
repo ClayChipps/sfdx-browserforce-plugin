@@ -4,25 +4,15 @@
   "title": "Omni-Channel Settings",
   "type": "object",
   "properties": {
+    "enableEnhancedOmniChannelRouting": {
+      "title": "Enable Enhanced Omni-Channel Routing",
+      "description": "Enables enhanced routing capabilities for Omni-Channel.",
+      "type": "boolean"
+    },
     "enableStatusBasedCapacityModel": {
       "title": "Enable Status-Based Capacity Model",
       "description": "Route and track work based on changes to work status and ownership.",
       "type": "boolean"
-    },
-    "enhancedOmniChannelRouting": {
-      "type": "object",
-      "properties": {
-        "agreeToTermsAndConditions": {
-          "title": "Agree to Terms and Conditions",
-          "description": "Once the terms have been accepted, this cannot be reverted.",
-          "type": "boolean"
-        },
-        "enableEnhancedOmniChannelRouting": {
-          "title": "Enable Enhanced Omni-Channel Routing",
-          "description": "Enables enhanced routing capabilities for Omni-Channel.",
-          "type": "boolean"
-        }
-      }
     }
   }
 }
