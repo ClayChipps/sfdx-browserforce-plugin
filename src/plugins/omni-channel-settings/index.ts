@@ -76,18 +76,10 @@ export class OmniChannelSettings extends BrowserforcePlugin {
       // See if the user needs to agree to the terms and conditions
       try {
         const agreeToTerms = await page.waitForSelector(
-          AGREE_TO_TERMS_SELECTOR,
-          {
-            timeout: 5000,
-          }
+          AGREE_TO_TERMS_SELECTOR
         );
 
-        const acceptButton = await page.waitForSelector(
-          ACCEPT_BUTTON_SELECTOR,
-          {
-            timeout: 5000,
-          }
-        );
+        const acceptButton = await page.waitForSelector(ACCEPT_BUTTON_SELECTOR);
 
         await agreeToTerms.click();
         await acceptButton.click();
