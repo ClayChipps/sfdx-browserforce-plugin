@@ -7,16 +7,16 @@ jobs:
   default:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version-file: .node-version
       - name: Install dependencies
         run: |
-          npm ci
-          npm install --global @salesforce/cli@${SF_CLI_VERSION:-"latest"}
+          npm ci --ignore-scripts
+          npm install --ignore-scripts --global @salesforce/cli@${SF_CLI_VERSION:-"latest"}
       - name: Run unit tests
         run: npm run test
       - name: Authenticate DevHub and create scratch org

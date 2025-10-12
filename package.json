@@ -9,13 +9,13 @@
   },
   "dependencies": {
     "@mdapi-issues/listmetadata-standardvalueset": "3.1.0",
-    "@salesforce/sf-plugins-core": "12.2.2",
-    "p-retry": "6.2.1",
-    "puppeteer": "24.10.0"
+    "@salesforce/sf-plugins-core": "12.2.4",
+    "p-retry": "7.0.0",
+    "puppeteer": "24.20.0"
   },
   "devDependencies": {
-    "@salesforce/dev-scripts": "11.0.2",
-    "oclif": "4.18.4"
+    "@salesforce/dev-scripts": "11.0.4",
+    "oclif": "4.22.27"
   },
   "files": [
     "/bin",
@@ -58,5 +58,8 @@
     "prepare": "npm run build",
     "test": "tsc -p test && nyc --reporter=lcov --reporter=text mocha \"test/**/*.test.ts\" \"src/**/*.test.ts\"",
     "test:e2e": "tsc -p test && mocha --slow 30s --timeout 2m --file test/e2e-setup.ts \"test/**/*.e2e-spec.ts\" \"src/**/*.e2e-spec.ts\""
+  },
+  "publishConfig": {
+    "provenance": true
   }
 }
