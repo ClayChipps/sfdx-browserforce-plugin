@@ -59,12 +59,8 @@ export class OmniChannelSettings extends BrowserforcePlugin {
 
     if ('enableEnhancedOmniChannelRouting' in config) {
       // Click the checkbox
-      await page.$eval(
-        ENHANCED_OMNI_CHANNEL_ROUTING_SELECTOR,
-        (e: HTMLInputElement, v: boolean) => {
-          e.checked = v;
-        },
-        config.enableEnhancedOmniChannelRouting
+      await page.$eval(ENHANCED_OMNI_CHANNEL_ROUTING_SELECTOR, (element) =>
+        element.click()
       );
 
       // Click the continue button
